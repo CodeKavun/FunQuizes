@@ -41,7 +41,7 @@ namespace FunQuiz
                 Console.WriteLine("\t[1] Add Answer");
                 Console.WriteLine("\t[2] Remove Answer\n");
 
-                Console.Write("Enter the command (any other - exit)");
+                Console.Write("Enter the command (any other - exit): ");
                 int operation = int.Parse(Console.ReadLine());
 
                 switch (operation)

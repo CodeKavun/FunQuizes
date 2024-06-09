@@ -10,44 +10,25 @@ namespace FunQuiz
     {
         static void Main(string[] args)
         {
-            User superUser = new User("biedronka", "biedronka", UserType.JesusMode);
+            UserManager.Init();
 
-            List<User> users = new List<User> { superUser };
-
-            Console.WriteLine("  -= Welcome to our really Awful Quiz Time! =-\n\n");
-
-            Console.Write("Enter your login: ");
-            string login = Console.ReadLine();
-            if (!UserFound(users, login))
+            JesusModePanel panel = new JesusModePanel();
+            if (UserManager.CurrentUser.Type == UserType.JesusMode) panel.PanelLoop();
+            else
             {
-                Console.WriteLine($"User with '{login}' login does not exist!");
-                return;
+                while (true)
+                {
+                    Console.WriteLine(panel + "\n");
+
+                    Console.Write("Select quiz: ");
+                    int quizIndex = int.Parse(Console.ReadLine());
+
+                    Console.Clear();
+                    panel.Quizzes[quizIndex].QuizLoop();
+                }
             }
-
-            User currentUser = users.Where(user => user.Name == login).First();
-
-            Console.Write("Enter your password: ");
-            string password = Console.ReadLine();
-            if (password != currentUser.Password)
-            {
-                Console.WriteLine("Incorrect password");
-                return;
-            }
-
-            JesusModePanel panel = new JesusModePanel(users);
-
-            if (currentUser.Type == UserType.JesusMode) panel.PanelLoop();
 
             Console.ReadKey();
-        }
-
-        private static bool UserFound(List<User> users, string username)
-        {
-            foreach (User user in users)
-            {
-                if (user.Name == username) return true;
-            }
-            return false;
         }
     }
 }

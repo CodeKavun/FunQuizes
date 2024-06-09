@@ -53,6 +53,7 @@
     <Compile Include="Quest.cs" />
     <Compile Include="Quiz.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="UserManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

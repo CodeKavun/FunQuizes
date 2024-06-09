@@ -9,17 +9,26 @@ namespace FunQuiz
     internal class Quiz
     {
         public string Title { get; set; }
-        public List<Quest> Questions { get; set; }
+        public List<Quest> Questions { get; private set; }
+        public List<User> TopPlayers { get; private set; }
 
         public Quiz(string title)
         {
             Title = title;
             Questions = new List<Quest>();
+            TopPlayers = new List<User>();
         }
 
         public void QuizLoop()
         {
             foreach (Quest quest in Questions) quest.AnswerQuest();
+
+            if (!UserManager.CurrentUser.CompletedQuizes.ContainsKey(Title))
+                UserManager.CurrentUser.CompletedQuizes.Add(Title, 1);
+            UserManager.SaveData();
+
+            TopPlayers.Add(UserManager.CurrentUser);
+            ShowTop();
         }
 
         public void JesusLoop()
@@ -32,8 +41,9 @@ namespace FunQuiz
                 Console.WriteLine("\t[1] Add question");
                 Console.WriteLine("\t[2] Remove question");
                 Console.WriteLine("\t[3] Edit question");
+                Console.WriteLine("\t[4] Top Players");
 
-                Console.Write("Enter the command: ");
+                Console.Write("Enter the command (any other - exit): ");
                 int operation = int.Parse(Console.ReadLine());
 
                 switch (operation)
@@ -57,6 +67,9 @@ namespace FunQuiz
                         int quastionIndex = int.Parse(Console.ReadLine());
                         Console.Clear();
                         Questions[quastionIndex].JesusLoop();
+                        break;
+                    case 4:
+                        ShowTop();
                         break;
                     default:
                         return;
@@ -85,6 +98,17 @@ namespace FunQuiz
             Console.Write("Enter the index of question to remove: ");
             int answerIndex = int.Parse(Console.ReadLine());
             Questions.RemoveAt(answerIndex);
+            Console.Clear();
+        }
+
+        public void ShowTop()
+        {
+            Console.WriteLine(" __ Top Players __ \n");
+
+            int index = 1;
+            foreach (User user in TopPlayers) Console.WriteLine($"{index}. {user.Name}\n");
+
+            Console.ReadKey();
             Console.Clear();
         }
 

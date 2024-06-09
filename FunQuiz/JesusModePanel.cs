@@ -10,13 +10,14 @@ namespace FunQuiz
 {
     internal class JesusModePanel
     {
-        public List<User> Users { get; private set; }
         public List<Quiz> Quizzes { get; private set; }
 
-        public JesusModePanel(List<User> users)
+        public JesusModePanel()
         {
-            Users = users;
             Quizzes = new List<Quiz>();
+
+            if (!File.Exists("Quiz.json")) Save();
+            else Load();
         }
 
         public void PanelLoop()
@@ -29,7 +30,8 @@ namespace FunQuiz
                 Console.WriteLine("\t[0] Add quiz");
                 Console.WriteLine("\t[1] Remove quiz");
                 Console.WriteLine("\t[2] Edit quiz");
-                Console.WriteLine("\t[3] Save\n");
+                Console.WriteLine("\t[3] Show");
+                Console.WriteLine("\t[4] Save");
 
                 Console.Write("Select command: ");
                 int command = int.Parse(Console.ReadLine());
@@ -45,12 +47,18 @@ namespace FunQuiz
                         RemoveQuiz();
                         break;
                     case 2:
+                        Console.WriteLine(this + "\n");
                         Console.Write("Enter the index of quiz to edit: ");
                         int quizIndex = int.Parse(Console.ReadLine());
                         Quizzes[quizIndex].JesusLoop();
                         Console.Clear();
                         break;
                     case 3:
+                        Console.WriteLine(this + "\n");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    case 4:
                         Save();
                         Console.Clear();
                         break;
@@ -88,12 +96,21 @@ namespace FunQuiz
         {
             using (StreamWriter writer = new StreamWriter("Quiz.json", false, Encoding.UTF8))
             {
-                string data = JsonConvert.SerializeObject(this);
+                string data = JsonConvert.SerializeObject(Quizzes, Formatting.Indented);
                 writer.WriteLine(data);
             }
 
             Console.WriteLine("\nSaved!");
             Console.ReadKey();
+        }
+
+        private void Load()
+        {
+            using (StreamReader reader = new StreamReader("Quiz.json"))
+            {
+                string data = reader.ReadToEnd();
+                Quizzes = JsonConvert.DeserializeObject<List<Quiz>>(data);
+            }
         }
 
         public override string ToString()
@@ -102,7 +119,7 @@ namespace FunQuiz
             int index = 0;
             foreach (Quiz quiz in Quizzes)
             {
-                str += $"[{index}] " + quiz + "\n";
+                str += $"[{index}] {quiz.Title} - {quiz.Questions.Count} quastions\n";
                 index++;
             }
 
